@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "410106010389",
+    "firebase_url": "https://pasco-43355-default-rtdb.firebaseio.com",
+    "project_id": "pasco-43355",
+    "storage_bucket": "pasco-43355.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410106010389:android:7c30d0df1aeaba0fdfe71c",
+        "android_client_info": {
+          "package_name": "com.lonewolf.pasco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410106010389-tukf69fjeb5gt7llmc1m76unr08p6cft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYewa4ZFS1xFAhNnsxdGshWOEn-Wty4-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410106010389-tukf69fjeb5gt7llmc1m76unr08p6cft.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
