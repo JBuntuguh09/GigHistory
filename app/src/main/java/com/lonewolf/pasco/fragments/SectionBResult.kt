@@ -44,7 +44,6 @@ class SectionBResult : Fragment() {
     private var param2: String? = null
     private lateinit var binding: FragmentSectionBResultBinding
     private lateinit var storage: Storage
-    private lateinit var progressBar : ProgressBar
     private  var arrayList = ArrayList<HashMap<String, String>>()
     private lateinit var databaseReference : DatabaseReference
     private lateinit var ansViewModel: answersViewModel
@@ -72,7 +71,6 @@ class SectionBResult : Fragment() {
 
         databaseReference = FirebaseDatabase.getInstance().reference
         storage = Storage(requireContext())
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
         arrayList = (activity as MainBase).sectBAns
         ansViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(answersViewModel::class.java)
 

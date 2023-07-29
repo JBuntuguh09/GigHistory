@@ -47,9 +47,10 @@ class MainBase : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_base)
+
         mainBaseBinding = ActivityMainBaseBinding.inflate(layoutInflater)
         setContentView(mainBaseBinding.root)
-
+        //
         auth = FirebaseAuth.getInstance()
         storage = Storage(this)
         databaseReference = FirebaseDatabase.getInstance().reference

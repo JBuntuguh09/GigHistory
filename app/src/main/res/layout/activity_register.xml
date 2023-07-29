@@ -31,8 +31,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_marginTop="10dp"
-                android:src="@drawable/logo"
+                android:src="@drawable/logo_other"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtSignUp"
@@ -42,7 +41,6 @@
                 app:layout_constraintDimensionRatio="3:1"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_marginTop="20dp"
                 android:id="@+id/inpFname"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintTop_toBottomOf="@id/imgPic"
@@ -53,29 +51,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/edtFName"
-                    android:hint="@string/first_name" />
+                    android:hint="@string/name" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inpLName"
+                android:id="@+id/inpPhone"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 app:layout_constraintTop_toBottomOf="@+id/inpFname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_marginTop="10dp"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/edtLName"
-                    android:hint="@string/last_name" />
+                    android:id="@+id/edtPhone"
+                    android:inputType="phone"
+                    android:hint="Phone Number" />
             </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inpEmail"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                app:layout_constraintTop_toBottomOf="@+id/inpLName"
+                app:layout_constraintTop_toBottomOf="@+id/inpPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -89,11 +89,45 @@
                     android:hint="@string/email" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <Spinner
+                android:padding="@dimen/baseline_10dp"
+                android:background="@drawable/edt_main"
+                app:layout_constraintTop_toBottomOf="@+id/inpEmail"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <AutoCompleteTextView
+                android:background="@drawable/edt_main"
+                app:layout_constraintTop_toBottomOf="@+id/spinGender"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinSchool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:padding="@dimen/baseline_10dp"
+                android:hint="@string/select_your_school"
+                android:drawableEnd="@drawable/ic_baseline_arrow_drop_down_24"
+                />
+
+            <Spinner
+                android:padding="@dimen/baseline_10dp"
+                android:background="@drawable/edt_main"
+                app:layout_constraintTop_toBottomOf="@+id/spinSchool"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinGrade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inpPassword"
                 app:passwordToggleEnabled="true"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                app:layout_constraintTop_toBottomOf="@+id/inpEmail"
+                app:layout_constraintTop_toBottomOf="@+id/spinGrade"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -137,6 +171,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <LinearLayout
+                app:layout_constraintTop_toBottomOf="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

@@ -45,10 +45,8 @@ class SectionB : Fragment() {
     private lateinit var binding: FragmentSectionBBinding
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storage: Storage
-    private lateinit var linearLayout: LinearLayout
 
     //private  var listAns : ArrayList<HashMap<String, String>> = ArrayList()
-    private lateinit var progressBar: ProgressBar
     val arrayList = ArrayList<HashMap<String, String>>()
     var listAnswers = ArrayList<HashMap<String, String>>()
 
@@ -79,20 +77,23 @@ class SectionB : Fragment() {
         binding = FragmentSectionBBinding.bind(view)
         databaseReference = FirebaseDatabase.getInstance().reference
         storage = Storage(requireContext())
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
         quesViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(QuesViewModel::class.java)
         ansViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(answersViewModel::class.java)
         numz = (activity as MainBase).randomQuesTotal
 
         quesViewModel.liveData.observe(viewLifecycleOwner) { data ->
             if (data.isNotEmpty()) {
+                binding.progressBar.visibility = View.GONE
+                println("here oooo")
                 getOffLine(data)
             } else {
+                println("there oooo")
                 getQuestions()
 
             }
 
         }
+
         getButtons()
         hideKeyboard()
         return view
@@ -121,51 +122,57 @@ class SectionB : Fragment() {
     }
 
     private fun getQuestions() {
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        println(storage.project)
         databaseReference.child("SectionB").child("History").child(storage.project!!).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(p0: DataSnapshot) {
+                try {
+                    binding.progressBar.visibility = View.GONE
+                   // println(p0)
+                    arrayList.clear()
+                    currNum =0
 
-                arrayList.clear()
-                currNum =0
+                    for(father in p0.children){
+                        val hashMapAns = HashMap<String, String>()
 
-                for(father in p0.children){
-                    val hashMapAns = HashMap<String, String>()
+                        hashMapAns["Question"]= father.child("Question").value.toString()
+                        hashMapAns["Answer"]= father.child("Answer").value.toString()
+                        hashMapAns["Question_Number"]= father.child("Question_Number").value.toString()
+                        hashMapAns["Topic"]= storage.project!!
+                        hashMapAns["Subject"]= "History"
+                        hashMapAns["Selected_Answer"]=""
+                        hashMapAns["Check"] = "0"
 
-                    hashMapAns["Question"]= father.child("Question").value.toString()
-                    hashMapAns["Answer"]= father.child("Answer").value.toString()
-                    hashMapAns["Question_Number"]= father.child("Question_Num").value.toString()
-                    hashMapAns["Topic"]= storage.project!!
-                    hashMapAns["Subject"]= "History"
-                    hashMapAns["Selected_Answer"]=""
-                    hashMapAns["Check"] = "0"
-
-                    arrayList.add(hashMapAns)
-                    listAnswers.add(hashMapAns)
-
-                }
-                progressBar.visibility = View.GONE
-                if(arrayList.size>0){
-
-                    deleteAllOffline()
-                    insertData()
-
-                    numz = arrayList.size
-                    binding.btnSubmit.setOnClickListener {
-                        cleanData()
+                        arrayList.add(hashMapAns)
+                        listAnswers.add(hashMapAns)
 
                     }
-                    nextQues(currNum)
-                    //getTimer()
+                    if(arrayList.size>0){
+                        ShortCut_To.sortData(arrayList, "Question_Number")
+                        deleteAllOffline()
+                        insertData()
+
+//                        numz = arrayList.size
+//                        binding.btnSubmit.setOnClickListener {
+//                            cleanData()
+//
+//                        }
+//                        nextQues(currNum)
+                        //getTimer()
+                    }
+                }catch (e:Exception){
+                    e.printStackTrace()
                 }
             }
 
             override fun onCancelled(p0: DatabaseError) {
-
+                binding.progressBar.visibility = View.GONE
             }
         })
     }
 
     private fun getOffLine(data: List<Question>) {
+        arrayList.clear()
         for(a in 0 until data.size) {
             val hasd = data[a]
 
@@ -182,6 +189,7 @@ class SectionB : Fragment() {
             arrayList.add(hashMapAns)
 
             listAnswers.add(hashMapAns)
+            println(hashMapAns["Question_Number"])
 
         }
 

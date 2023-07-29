@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_TextView_Spinner"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+
+    android:padding="3dp"
+    android:textColor="@android:color/black"
+    android:textSize="15sp"
+    app:drawableTint="@color/black"
+    app:drawableRightCompat="@drawable/ic_baseline_arrow_drop_down_24" />

@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true)
         storage = Storage(this)
         auth = FirebaseAuth.getInstance()
         databaseReference = FirebaseDatabase.getInstance().reference
@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         register = findViewById(R.id.txtRegister)
         forgot = findViewById(R.id.txtForgot)
         progressBar = findViewById(R.id.progressBar)
+
 
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener {

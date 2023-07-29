@@ -1,16 +1,17 @@
 package com.lonewolf.pasco.fragments
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import com.lonewolf.pasco.MainBase
 import com.lonewolf.pasco.R
 import com.lonewolf.pasco.database.NotesViewModel
 import com.lonewolf.pasco.databinding.FragmentWassceTextbookBinding
+import com.lonewolf.pasco.resources.ShortCut_To
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,7 +55,35 @@ class WassceTextbook : Fragment() {
     private fun getButtons() {
         val notes = (activity as MainBase).notes
         binding.txtTopic.text = notes["Sub_Topic"]
-        binding.txtContent.text = notes["Content"]
+
+        ShortCut_To.boldText(notes["Content"]!!, binding.txtContent)
+        binding.txtContent.setTextIsSelectable(true)
+
+        binding.txtContent.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP && binding.txtContent.hasSelection()) {
+
+                true
+            } else {
+                val selectedText = binding.txtContent.text.subSequence(binding.txtContent.selectionStart, binding.txtContent.selectionEnd)
+                println("lllll"+selectedText)
+                false
+            }
+        }
+
+//        binding.txtContent.setOnLongClickListener {
+//            if (binding.txtContent.hasSelection()) {
+//                val selectedText = binding.txtContent.text.subSequence(binding.txtContent.selectionStart, binding.txtContent.selectionEnd)
+//                println(selectedText)
+//                true
+//            } else {
+//                val selectedText = binding.txtContent.text.subSequence(binding.txtContent.selectionStart, binding.txtContent.selectionEnd)
+//                println(selectedText)
+//                false
+//            }
+//        }
+
+
+        //binding.txtContent.text = bolden
 //        notesViewModel.liveSingle.observe(viewLifecycleOwner){data->
 //            if(data.isNotEmpty()){
 //                val hash = data[0]

@@ -18,13 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.BarLineChartBase
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.database.*
 import com.lonewolf.pasco.MainBase
@@ -34,7 +31,6 @@ import com.lonewolf.pasco.databinding.FragmentQuizBinding
 import com.lonewolf.pasco.resources.My_ColorTemplate
 import com.lonewolf.pasco.resources.ShortCut_To
 import com.lonewolf.pasco.resources.Storage
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -46,8 +42,6 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -110,8 +104,7 @@ class Quiz : Fragment() {
             println("here")
 
             quizViewModel.liveData.observe(viewLifecycleOwner){ data ->
-
-                if(data.size>0){
+                if(data.isNotEmpty()){
                     println("size = ${data.size}")
                     arrayList.clear()
                     getOffline(data)
@@ -273,33 +266,37 @@ class Quiz : Fragment() {
                     override fun onDataChange(p0: DataSnapshot) {
 
 
-                        for(grand in p0.children){
-                            for(father in grand.children){
-                                val hashMapAns = HashMap<String, String>()
+                        try {
+                            for(grand in p0.children){
+                                for(father in grand.children){
+                                    val hashMapAns = HashMap<String, String>()
 
 
-                                hashMapAns["Question"]= father.child("Question").value.toString()
-                                hashMapAns["AnswerA"]= father.child("AnswerA").value.toString()
-                                hashMapAns["AnswerB"]= father.child("AnswerB").value.toString()
-                                hashMapAns["AnswerC"]= father.child("AnswerC").value.toString()
-                                hashMapAns["AnswerD"]= father.child("AnswerD").value.toString()
-                                hashMapAns["SelectAns"]= father.child("SelectAns").value.toString()
-                                hashMapAns["Question_Number"]= father.child("Question_Number").value.toString()
-                                hashMapAns["Topic"]= storage.project!!
-                                hashMapAns["Subject"]= "History"
-                                hashMapAns["Ans"]= ""
-                                hashMapAns["Type"] = "Objectives"
+                                    hashMapAns["Question"]= father.child("Question").value.toString()
+                                    hashMapAns["AnswerA"]= father.child("AnswerA").value.toString()
+                                    hashMapAns["AnswerB"]= father.child("AnswerB").value.toString()
+                                    hashMapAns["AnswerC"]= father.child("AnswerC").value.toString()
+                                    hashMapAns["AnswerD"]= father.child("AnswerD").value.toString()
+                                    hashMapAns["SelectAns"]= father.child("SelectAns").value.toString()
+                                    hashMapAns["Question_Number"]= father.child("Question_Number").value.toString()
+                                    hashMapAns["Topic"]= storage.project!!
+                                    hashMapAns["Subject"]= "History"
+                                    hashMapAns["Ans"]= ""
+                                    hashMapAns["Type"] = "Objectives"
 
-                                arrayList.add(hashMapAns)
+                                    arrayList.add(hashMapAns)
+                                }
+
+                                arrayList.shuffle()
+
+
+
                             }
-
-                            arrayList.shuffle()
-
-
-
+                            println("aloha = ${arrayList}")
+                            getDicOnline()
+                        }catch (e:Exception){
+                            e.printStackTrace()
                         }
-                        println("aloha = ${arrayList}")
-                        getDicOnline()
                     }
 
                     override fun onCancelled(p0: DatabaseError) {

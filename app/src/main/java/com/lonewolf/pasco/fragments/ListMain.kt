@@ -21,6 +21,7 @@ import com.lonewolf.pasco.MainBase
 import com.lonewolf.pasco.R
 import com.lonewolf.pasco.adaptors.RecyclerViewList
 import com.lonewolf.pasco.database.*
+import com.lonewolf.pasco.databinding.FragmentListMainBinding
 import com.lonewolf.pasco.resources.ShortCut_To
 
 // TODO: Rename parameter arguments, choose names that match
@@ -39,15 +40,13 @@ class ListMain : Fragment() {
     private var param2: String? = null
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storage: Storage
-    private lateinit var recyclerView: RecyclerView
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var progressBar : ProgressBar
     private lateinit var topicsViewModel: TopicsViewModel
     private lateinit var notesViewModel: NotesViewModel
     private var liveData: MutableLiveData<String> = MutableLiveData()
-    private lateinit var search : EditText
     private  var arrayList = ArrayList<HashMap<String, String>>()
     var shouldInterceptBackPress = true
+    private lateinit var binding: FragmentListMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +64,8 @@ class ListMain : Fragment() {
         val view = inflater.inflate(R.layout.fragment_list_main, container, false)
         storage = Storage(requireContext())
         databaseReference = FirebaseDatabase.getInstance().reference
-        recyclerView = view.findViewById(R.id.recyclerView)
+        binding = FragmentListMainBinding.bind(view)
         linearLayoutManager = LinearLayoutManager(requireContext())
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
-        search = view.findViewById(R.id.edtSearch)
 
 
         topicsViewModel = ViewModelProvider(requireActivity()).get(TopicsViewModel::class.java)
@@ -83,7 +80,7 @@ class ListMain : Fragment() {
     }
 
     private fun getButton() {
-        search.addTextChangedListener(object : TextWatcher{
+        binding.edtSearch.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
@@ -104,24 +101,24 @@ class ListMain : Fragment() {
     }
 
     private fun getListOffline(data : MutableList<String>){
-        recyclerView.removeAllViews()
+        binding.recyclerView.removeAllViews()
         val arrayList : ArrayList<HashMap<String, String>> = ArrayList()
         for(a in 0 until  data.size){
             val lash = HashMap<String, String>()
             val hash = data[a]
-            if(hash.lowercase().contains(search.text.toString().lowercase())) {
+            if(hash.lowercase().contains(binding.edtSearch.text.toString().lowercase())) {
                 lash.put("val", hash)
                 arrayList.add(lash)
             }
         }
 
-        progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
        // if(arrayList.size>0){
 
             val recyclerViewList = RecyclerViewList(requireContext(), arrayList, 0)
-            recyclerView.layoutManager = linearLayoutManager
-            recyclerView.itemAnimator = DefaultItemAnimator()
-            recyclerView.adapter = recyclerViewList
+        binding.recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+        binding.recyclerView.adapter = recyclerViewList
        // }
     }
 
