@@ -98,6 +98,7 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
+                    android:padding="@dimen/baseline_10dp"
                     android:background="@drawable/radio_shadow"
                     android:elevation="10dp"
                     android:stateListAnimator="@null"
@@ -108,6 +109,7 @@
                     android:textSize="16sp" />
 
                 <RadioButton
+                    android:padding="@dimen/baseline_10dp"
                     android:background="@drawable/radio_shadow"
                     android:layout_marginTop="10dp"
                     android:id="@+id/radioB"
@@ -117,9 +119,9 @@
                     android:textSize="16sp" />
 
                 <RadioButton
+                    android:padding="@dimen/baseline_10dp"
                     android:background="@drawable/radio_shadow"
                     android:layout_marginTop="10dp"
-
                     android:id="@+id/radioC"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,9 +129,9 @@
                     android:textSize="16sp" />
 
                 <RadioButton
+                    android:padding="@dimen/baseline_10dp"
                     android:background="@drawable/radio_shadow"
                     android:layout_marginTop="10dp"
-
                     android:id="@+id/radioD"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -206,5 +208,13 @@
 
        </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
+    <ProgressBar
+        android:elevation="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/progressBar"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

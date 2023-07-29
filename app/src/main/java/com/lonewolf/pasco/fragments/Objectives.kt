@@ -42,10 +42,7 @@ class Objectives : Fragment() {
     private var param2: String? = null
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storage: Storage
-    private lateinit var linearLayout: LinearLayout
-    private lateinit var submit : Button
     private  var listAns : ArrayList<HashMap<String, String>> = ArrayList()
-    private lateinit var progressBar: ProgressBar
     private lateinit var binding: FragmentObjectivesBinding
     var currNum = 0
     //val arrayList = ArrayList<HashMap<String, String>>()
@@ -76,9 +73,7 @@ class Objectives : Fragment() {
         val view = inflater.inflate(R.layout.fragment_objectives, container, false)
         databaseReference = FirebaseDatabase.getInstance().reference
         storage = Storage(requireContext())
-        linearLayout = view.findViewById(R.id.linMain)
-        submit = view.findViewById(R.id.btnSubmit)
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
+
         binding = FragmentObjectivesBinding.bind(view)
         numz = (activity as MainBase).randomQuesTotal
         storage.isComplete = 0
@@ -102,65 +97,67 @@ class Objectives : Fragment() {
 
 
     private fun getQuestions() {
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         databaseReference.child("Questions").child("History").child(storage.project!!).addValueEventListener(
             object : ValueEventListener{
                 override fun onDataChange(p0: DataSnapshot) {
-                    //selVal.clear()
-                    listAns.clear()
-                    linearLayout.removeAllViews()
+                    try {
+                        listAns.clear()
+                        binding.linMain.removeAllViews()
 
-                    currNum = 0
-                    println(p0.toString())
-                    for(father in p0.children){
-                        val hashMap = HashMap<String, String>()
-                        val hashMapAns = HashMap<String, String>()
-                        hashMap["Question"]= father.child("Question").value.toString()
-                        hashMap["AnswerA"]= father.child("AnswerA").value.toString()
-                        hashMap["AnswerB"]= father.child("AnswerB").value.toString()
-                        hashMap["AnswerC"]= father.child("AnswerC").value.toString()
-                        hashMap["AnswerD"]= father.child("AnswerD").value.toString()
-                        hashMap["SelectAns"]= father.child("SelectAns").value.toString()
-                        hashMap["Question_Number"]= father.child("Question_Number").value.toString()
-
-
-                        hashMapAns["Question"]= father.child("Question").value.toString()
-                        hashMapAns["AnswerA"]= father.child("AnswerA").value.toString()
-                        hashMapAns["AnswerB"]= father.child("AnswerB").value.toString()
-                        hashMapAns["AnswerC"]= father.child("AnswerC").value.toString()
-                        hashMapAns["AnswerD"]= father.child("AnswerD").value.toString()
-                        hashMapAns["SelectAns"]= father.child("SelectAns").value.toString()
-                        hashMapAns["Question_Number"]= father.child("Question_Number").value.toString()
-                        hashMapAns["Topic"]= storage.project!!
-                        hashMapAns["Subject"]= "History"
-                        hashMapAns["Ans"]= ""
-                        hashMapAns["Check"] = "0"
+                        currNum = 0
+                        for(father in p0.children){
+                            val hashMap = HashMap<String, String>()
+                            val hashMapAns = HashMap<String, String>()
+                            hashMap["Question"]= father.child("Question").value.toString()
+                            hashMap["AnswerA"]= father.child("AnswerA").value.toString()
+                            hashMap["AnswerB"]= father.child("AnswerB").value.toString()
+                            hashMap["AnswerC"]= father.child("AnswerC").value.toString()
+                            hashMap["AnswerD"]= father.child("AnswerD").value.toString()
+                            hashMap["SelectAns"]= father.child("SelectAns").value.toString()
+                            hashMap["Question_Number"]= father.child("Question_Number").value.toString()
 
 
-                        arrayListOff.add(hashMap)
-                        listAns.add(hashMapAns)
-                        ansList.add("")
+                            hashMapAns["Question"]= father.child("Question").value.toString()
+                            hashMapAns["AnswerA"]= father.child("AnswerA").value.toString()
+                            hashMapAns["AnswerB"]= father.child("AnswerB").value.toString()
+                            hashMapAns["AnswerC"]= father.child("AnswerC").value.toString()
+                            hashMapAns["AnswerD"]= father.child("AnswerD").value.toString()
+                            hashMapAns["SelectAns"]= father.child("SelectAns").value.toString()
+                            hashMapAns["Question_Number"]= father.child("Question_Number").value.toString()
+                            hashMapAns["Topic"]= storage.project!!
+                            hashMapAns["Subject"]= "History"
+                            hashMapAns["Ans"]= ""
+                            hashMapAns["Check"] = "0"
 
-                    }
-                    progressBar.visibility = View.GONE
-                    if(listAns.size>0){
-                        //setQuestions(arrayList)
-                        listAns.shuffle()
-                       deleteAllOffline()
-                        insertData()
 
-                        if(listAns.size<= numz){
-                            numz = listAns.size
+                            arrayListOff.add(hashMap)
+                            listAns.add(hashMapAns)
+                            ansList.add("")
+
                         }
-                        val s: MutableSet<Int> = mutableSetOf()
-                        while (s.size < numz) { s.add((0 until listAns.size).random()) }
-                       //  myRandomValues = s.toList()
+                        binding.progressBar.visibility = View.GONE
+                        if(listAns.size>0){
+                            //setQuestions(arrayList)
+                            listAns.shuffle()
+                            deleteAllOffline()
+                            insertData()
 
-                        nextQues(0)
-                        binding.btnSubmit.setOnClickListener {
-                            cleanAnswer(0)
+                            if(listAns.size<= numz){
+                                numz = listAns.size
+                            }
+                            val s: MutableSet<Int> = mutableSetOf()
+                            while (s.size < numz) { s.add((0 until listAns.size).random()) }
+                            //  myRandomValues = s.toList()
+
+                            nextQues(0)
+                            binding.btnSubmit.setOnClickListener {
+                                cleanAnswer(0)
+                            }
+                            getTimer()
                         }
-                        getTimer()
+                    }catch (e:Exception){
+                        e.printStackTrace()
                     }
                 }
 
@@ -172,8 +169,8 @@ class Objectives : Fragment() {
     }
 
     private fun getOffLine(data : List<Question>){
-        for(a in 0 until data.size) {
-            val hasd = data[a]
+        for(element in data) {
+            val hasd = element
             val hashMap = HashMap<String, String>()
             val hashMapAns = HashMap<String, String>()
             hashMap["Question"] = hasd.question
@@ -203,7 +200,7 @@ class Objectives : Fragment() {
             ansList.add("")
 
         }
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
 
             if(listAns.size>0){
                 listAns.shuffle()
@@ -226,56 +223,12 @@ class Objectives : Fragment() {
 
     private fun submitTest() {
         try {
-            (activity as MainBase).mainBaseBinding.progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
         }catch (e:Exception){
             e.printStackTrace()
         }
 
         insertAns()
-//        databaseReference.child("Identifiers").child("Obj_Ans_Id")
-//            .addListenerForSingleValueEvent(
-//                object : ValueEventListener {
-//                    override fun onDataChange(p0: DataSnapshot) {
-//                        val num =
-//                            (p0.value.toString().toInt() + 1).toString()
-//                        val id = num + "--" + ShortCut_To.currentDatewithTime.split(".")[0].replace("T", " ")
-//
-//                        databaseReference.child("Answers")
-//                            .child(storage.uSERID!!).child("History")
-//                            .child(storage.project!!).child(id)
-//                            .setValue(listAns).addOnSuccessListener {
-//                                databaseReference.child("Identifiers")
-//                                    .child("Obj_Ans_Id").setValue(num)
-//                                Toast.makeText(
-//                                    requireContext(),
-//                                    "Successfully submitted",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                                cDown?.cancel()
-//                                (activity as MainBase).mainBaseBinding.progressBar.visibility = View.GONE
-//                                (activity as MainBase).objCompletedId = id
-//                                (activity as MainBase).navTo(
-//                                    ObjectivesResults(),
-//                                    "${storage.project} results",
-//                                    "Objectives",
-//                                    0
-//                                )
-//                            }.addOnFailureListener {
-//                                Toast.makeText(
-//                                    requireContext(),
-//                                    it.message,
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                                (activity as MainBase).mainBaseBinding.progressBar.visibility = View.GONE
-//                            }
-//
-//                    }
-//
-//                    override fun onCancelled(p0: DatabaseError) {
-//
-//                    }
-//                }
-//            )
     }
 
     private fun nextQues(ind: Int) {
@@ -378,7 +331,7 @@ class Objectives : Fragment() {
             val alertDialog = AlertDialog.Builder(requireContext())
 
             val layoutInflater = LayoutInflater.from(requireContext())
-            val view = layoutInflater.inflate(R.layout.layout_goto, linearLayout, false)
+            val view = layoutInflater.inflate(R.layout.layout_goto, binding.linMain, false)
 
             val numQues = view.findViewById<EditText>(R.id.edtNum)
             val send = view.findViewById<Button>(R.id.btnSubmit)
@@ -504,7 +457,7 @@ class Objectives : Fragment() {
 
     private fun insertAns(){
         println("jammmm : ${listAns}")
-        (activity as MainBase).mainBaseBinding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         val rId = (1000..10000).shuffled().last()
         val aId = "${ShortCut_To.currentDatewithTime.split(".")[0].replace(" T ", " ")}$rId"
         for(a in 0 until listAns.size){
@@ -515,7 +468,7 @@ class Objectives : Fragment() {
             ansViewModel.insert(ans)
         }
         cDown?.cancel()
-        (activity as MainBase).mainBaseBinding.progressBar.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
         storage.ansTitle = aId
         (activity as MainBase).objCompletedId = aId
         (activity as MainBase).navTo(

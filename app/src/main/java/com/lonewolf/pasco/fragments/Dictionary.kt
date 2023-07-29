@@ -24,6 +24,7 @@ import com.lonewolf.pasco.R
 import com.lonewolf.pasco.adaptors.RecyclerViewDictionary
 import com.lonewolf.pasco.database.DictionaryViewModel
 import com.lonewolf.pasco.database.Question
+import com.lonewolf.pasco.databinding.FragmentDictionaryBinding
 import com.lonewolf.pasco.resources.ShortCut_To
 import com.lonewolf.pasco.resources.Storage
 import java.util.*
@@ -45,15 +46,13 @@ class Dictionary : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var recyclerView: RecyclerView
     private lateinit var storage: Storage
     private lateinit var databaseReference: DatabaseReference
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var search : EditText
     private  var arrayList = ArrayList<HashMap<String, String>>()
-    private lateinit var progressBar: ProgressBar
     private val liveData: MutableLiveData<String> = MutableLiveData()
     private lateinit var dictionaryViewModel: DictionaryViewModel
+    private lateinit var binding: FragmentDictionaryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,11 +67,9 @@ class Dictionary : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_dictionary, container, false)
         storage = Storage(requireContext())
+        binding = FragmentDictionaryBinding.bind(view)
         databaseReference = FirebaseDatabase.getInstance().reference
-        recyclerView = view.findViewById(R.id.recyclerView)
         linearLayoutManager = LinearLayoutManager(requireContext())
-        search = view.findViewById(R.id.edtSearch)
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
         liveData.observe(viewLifecycleOwner){
             searchFor("")
         }
@@ -90,7 +87,7 @@ class Dictionary : Fragment() {
 
 
         }
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         //getWord()
         getButtons()
         return view
@@ -98,7 +95,7 @@ class Dictionary : Fragment() {
 
     private fun getOffLine(data: List<com.lonewolf.pasco.database.Dictionary>) {
         arrayList.clear()
-        recyclerView.removeAllViews()
+        binding.recyclerView.removeAllViews()
         for(a in 0 until data.size){
             val hasd = data[a]
             val hash = HashMap<String, String>()
@@ -108,18 +105,18 @@ class Dictionary : Fragment() {
 
             arrayList.add(hash)
         }
-        progressBar.visibility = GONE
+        binding.progressBar.visibility = GONE
         if(arrayList.size>0){
             val recyclerViewDictionary = RecyclerViewDictionary(requireActivity(), arrayList)
-            recyclerView.layoutManager = linearLayoutManager
-            recyclerView.itemAnimator = DefaultItemAnimator()
-            recyclerView.adapter = recyclerViewDictionary
+            binding.recyclerView.layoutManager = linearLayoutManager
+            binding.recyclerView.itemAnimator = DefaultItemAnimator()
+            binding.recyclerView.adapter = recyclerViewDictionary
         }
     }
 
     private fun getButtons() {
 
-        search.addTextChangedListener(object : TextWatcher{
+        binding.edtSearch.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
@@ -134,15 +131,15 @@ class Dictionary : Fragment() {
             }
 
         })
-        search.setOnTouchListener(OnTouchListener { v, event ->
+        binding.edtSearch.setOnTouchListener(OnTouchListener { v, event ->
             val DRAWABLE_LEFT = 0
             val DRAWABLE_TOP = 1
             val DRAWABLE_RIGHT = 2
             val DRAWABLE_BOTTOM = 3
             if (event.action == MotionEvent.ACTION_UP) {
-                if (event.rawX >= search.right - search.compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
+                if (event.rawX >= binding.edtSearch.right - binding.edtSearch.compoundDrawables[DRAWABLE_RIGHT].bounds.width()) {
                     // your action here
-                        searchFor(search.text.toString())
+                        searchFor(binding.edtSearch.text.toString())
                     return@OnTouchListener true
                 }
             }
@@ -155,24 +152,28 @@ class Dictionary : Fragment() {
             .addValueEventListener(
             object : ValueEventListener{
                 override fun onDataChange(p0: DataSnapshot) {
-                    arrayList.clear()
-                    recyclerView.removeAllViews()
-                    for(father in p0.children){
-                        val hash = HashMap<String, String>()
-                        hash["Word"] = father.child("Word").value.toString()
-                        hash["Meaning"] = father.child("Meaning").value.toString()
-                        hash["Pic"] = father.child("Pic_Path").value.toString()
+                    try {
+                        arrayList.clear()
+                        binding.recyclerView.removeAllViews()
+                        for(father in p0.children){
+                            val hash = HashMap<String, String>()
+                            hash["Word"] = father.child("Word").value.toString()
+                            hash["Meaning"] = father.child("Meaning").value.toString()
+                            hash["Pic"] = father.child("Pic_Path").value.toString()
 
-                        arrayList.add(hash)
-                    }
-                    progressBar.visibility = GONE
-                    if(arrayList.size>0){
-                        deleteAll()
-                        insertData()
-                        val recyclerViewDictionary = RecyclerViewDictionary(requireActivity(), arrayList)
-                        recyclerView.layoutManager = linearLayoutManager
-                        recyclerView.itemAnimator = DefaultItemAnimator()
-                        recyclerView.adapter = recyclerViewDictionary
+                            arrayList.add(hash)
+                        }
+                        binding.progressBar.visibility = GONE
+                        if(arrayList.size>0){
+                            deleteAll()
+                            insertData()
+                            val recyclerViewDictionary = RecyclerViewDictionary(requireActivity(), arrayList)
+                            binding.recyclerView.layoutManager = linearLayoutManager
+                            binding.recyclerView.itemAnimator = DefaultItemAnimator()
+                            binding.recyclerView.adapter = recyclerViewDictionary
+                        }
+                    }catch (e:Exception){
+                        e.printStackTrace()
                     }
                 }
 
@@ -186,11 +187,11 @@ class Dictionary : Fragment() {
 
     private fun searchFor(word:String){
         val arrayListAlt = ArrayList<HashMap<String, String>>()
-        recyclerView.removeAllViewsInLayout()
+        binding.recyclerView.removeAllViewsInLayout()
 
         for (a in 0 until arrayList.size){
             val hashMap = arrayList[a]
-            if(hashMap["Word"]!!.lowercase(Locale.getDefault()).contains(search.text.toString()
+            if(hashMap["Word"]!!.lowercase(Locale.getDefault()).contains(binding.edtSearch.text.toString()
                     .lowercase(Locale.getDefault()))){
                 arrayListAlt.add(hashMap)
             }
@@ -200,9 +201,9 @@ class Dictionary : Fragment() {
 
         if(arrayListAlt.size>0){
             val recyclerViewDictionary = RecyclerViewDictionary(requireActivity(), arrayListAlt)
-            recyclerView.layoutManager = linearLayoutManager
-            recyclerView.itemAnimator = DefaultItemAnimator()
-            recyclerView.adapter = recyclerViewDictionary
+            binding.recyclerView.layoutManager = linearLayoutManager
+            binding.recyclerView.itemAnimator = DefaultItemAnimator()
+            binding.recyclerView.adapter = recyclerViewDictionary
         }
     }
 

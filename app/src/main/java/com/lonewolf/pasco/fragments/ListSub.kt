@@ -21,6 +21,7 @@ import com.lonewolf.pasco.adaptors.RecyclerViewListSub
 import com.lonewolf.pasco.database.Notes
 import com.lonewolf.pasco.database.NotesViewModel
 import com.lonewolf.pasco.database.TopicsViewModel
+import com.lonewolf.pasco.databinding.FragmentListSubBinding
 import com.lonewolf.pasco.resources.ShortCut_To
 import com.lonewolf.pasco.resources.Storage
 
@@ -40,13 +41,11 @@ class ListSub : Fragment() {
     private var param2: String? = null
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storage: Storage
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: FragmentListSubBinding
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var progressBar : ProgressBar
     private lateinit var topicsViewModel: TopicsViewModel
     private lateinit var notesViewModel: NotesViewModel
     private var liveData: MutableLiveData<String> = MutableLiveData()
-    private lateinit var search : EditText
     private  var arrayList = ArrayList<HashMap<String, String>>()
     private  var arrayListOff = ArrayList<HashMap<String, String>>()
 
@@ -66,12 +65,11 @@ class ListSub : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_list_sub, container, false)
 
+        binding = FragmentListSubBinding.bind(view)
         storage = Storage(requireContext())
         databaseReference = FirebaseDatabase.getInstance().reference
-        recyclerView = view.findViewById(R.id.recyclerView)
         linearLayoutManager = LinearLayoutManager(requireContext())
-        progressBar = (activity as MainBase).mainBaseBinding.progressBar
-        search = view.findViewById(R.id.edtSearch)
+
 
 
         notesViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(NotesViewModel::class.java)
@@ -86,7 +84,7 @@ class ListSub : Fragment() {
 //        }
         notesViewModel.liveData.observe(viewLifecycleOwner){data->
                 if(data.isNotEmpty()){
-                    println("gh ${data}")
+
                     getTextbookOffline(data)
                 }else{
                     println("mmmmmmm")
@@ -103,7 +101,7 @@ class ListSub : Fragment() {
     }
 
     private fun getButton() {
-        search.addTextChangedListener(object : TextWatcher {
+        binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
@@ -157,15 +155,15 @@ class ListSub : Fragment() {
             ShortCut_To.sortData(arrayListOff, "Priority")
             ShortCut_To.sortData(arrayList, "Priority")
 
-            progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
            // notesViewModel.deleteAll()
             syncOnline()
 
             try {
                 val recyclerViewList = RecyclerViewListSub(requireContext(), listUniq, 1)
-                recyclerView.layoutManager = linearLayoutManager
-                recyclerView.itemAnimator = DefaultItemAnimator()
-                recyclerView.adapter = recyclerViewList
+                binding.recyclerView.layoutManager = linearLayoutManager
+                binding.recyclerView.itemAnimator = DefaultItemAnimator()
+                binding.recyclerView.adapter = recyclerViewList
             }catch (e:Exception){
                 e.printStackTrace()
             }
@@ -176,11 +174,13 @@ class ListSub : Fragment() {
     private fun getTextBookOnline() {
         val listUniq = ArrayList<HashMap<String, String>>()
         val list = ArrayList<String>()
-        progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+
         databaseReference.child("Notes").child("History").child(storage.project!!)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(p0: DataSnapshot) {
-                    println("mooo 2: $p0")
+
+
                     for (grand in p0.children){
                         for (father in grand.children){
                             val hash = HashMap<String, String>()
@@ -200,11 +200,12 @@ class ListSub : Fragment() {
                             hashOff["val"] = father.child("Sub_Topic").value.toString()
                             hashOff["Priority"] =  father.child("Priority").value.toString()
 
-                            arrayList.add(hash)
-                            arrayListOff.add(hashOff)
+
 
 
                             if(!list.contains(father.child("Sub_Topic").value.toString())){
+                                arrayList.add(hash)
+                                arrayListOff.add(hashOff)
                                 list.add(father.child("Sub_Topic").value.toString())
                                 listUniq.add(hash)
                             }
@@ -216,14 +217,13 @@ class ListSub : Fragment() {
                         ShortCut_To.sortData(arrayList, "Priority")
 
                         insertOffline(arrayList)
-                        println("hhhhh : $arrayList")
-                        progressBar.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
 
                         try {
                             val recyclerViewList = RecyclerViewListSub(requireContext(), listUniq, 1)
-                            recyclerView.layoutManager = linearLayoutManager
-                            recyclerView.itemAnimator = DefaultItemAnimator()
-                            recyclerView.adapter = recyclerViewList
+                            binding.recyclerView.layoutManager = linearLayoutManager
+                            binding.recyclerView.itemAnimator = DefaultItemAnimator()
+                            binding.recyclerView.adapter = recyclerViewList
                         }catch (e:Exception){
                             e.printStackTrace()
                         }
@@ -232,7 +232,7 @@ class ListSub : Fragment() {
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
-
+                    binding.progressBar.visibility = View.GONE
                 }
             })
     }
@@ -252,13 +252,13 @@ class ListSub : Fragment() {
         super.onResume()
     }
 
-    fun syncOnline(){
+    private fun syncOnline(){
           val arrayListNew = ArrayList<HashMap<String, String>>()
         databaseReference.child("Notes").child("History").child(storage.project!!)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(p0: DataSnapshot) {
                     arrayListNew.clear()
-                    println("mooo : $p0")
+
                     for (grand in p0.children){
                         for (father in grand.children){
                             val hash = HashMap<String, String>()

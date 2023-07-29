@@ -17,7 +17,7 @@
     <string name="enter_valid_email">Enter a valid email</string>
     <string name="enter_email">Enter your email</string>
     <string name="enter_password">Enter you password</string>
-    <string name="enter_f_name">Enter your first name</string>
+    <string name="enter_f_name">Enter your name</string>
     <string name="confirm_pass">Confirm your password. They do not match</string>
     <string name="enter_last_name">Enter your last name</string>
     <string name="submit">Submit</string>
@@ -72,4 +72,10 @@
     <string name="readMore">We know you can do better</string>
     <string name="defineQuiz">Define Quiz</string>
     <string name="user_s_opinion">User\'s Opinion</string>
+    <string name="select_your_school">Select your school</string>
+    <string name="selectgender">Select your Gender</string>
+    <string name="selectGrade">Select your grade</string>
+    <string name="selectSchool">Select your School</string>
+    <string name="name">Name</string>
+    <string name="enter_phone">Enter your phone number</string>
 </resources>
