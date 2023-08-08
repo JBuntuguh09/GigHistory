@@ -2,6 +2,8 @@ package com.lonewolf.pasco
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -10,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.lonewolf.pasco.databinding.ActivityRegisterBinding
+import com.lonewolf.pasco.notification.Send
 import com.lonewolf.pasco.resources.Constant
 import com.lonewolf.pasco.resources.ShortCut_To
 import com.lonewolf.pasco.resources.Storage
@@ -32,8 +35,10 @@ class Register : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        //setContentView(R.layout.activity_register)
 
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         fname = findViewById(R.id.edtFName)
         phone = findViewById(R.id.edtPhone)
         email = findViewById(R.id.edtEmail)
@@ -53,6 +58,27 @@ class Register : AppCompatActivity() {
     }
 
     private fun getButtons() {
+
+        fname.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                if (p0 != null) {
+                    if (p0.toString().isNotEmpty()) {
+                        binding.txtSymbol.text = p0.toString().substring(0..0).uppercase()
+                    }else{
+                        binding.txtSymbol.text = ""
+                    }
+                }
+            }
+
+        })
         register.setOnClickListener {
             if(fname.text.toString().isEmpty()){
                 fname.error = getString(R.string.enter_f_name)
@@ -122,10 +148,11 @@ class Register : AppCompatActivity() {
 
                 databaseReference.child("Users").child(storage.uSERID!!).setValue(hashMap).addOnSuccessListener {
                     Toast.makeText(this, "Successfully signed up", Toast.LENGTH_SHORT).show()
-                    com.lonewolf.pasco.notification.Send.notification(storage.uSERID!!, "Sign Up", "Welcome to Pasco", storage.tokenId!!, this, 0)
+                    Send.notification(storage.uSERID!!, "Sign Up", "Welcome to GIG History", storage.tokenId!!, this, 0)
                     progressBar.visibility = View.GONE
-                    val intent = Intent(this, MainBase::class.java)
-                    startActivity(intent)
+                    storage.justLoggedIn = true
+//                    val intent = Intent(this, MainBase::class.java)
+//                    startActivity(intent)
                     finish()
                 }.addOnFailureListener {
                     Log.d("num1", it.message.toString())

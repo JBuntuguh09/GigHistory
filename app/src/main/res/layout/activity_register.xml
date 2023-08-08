@@ -30,15 +30,38 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:src="@drawable/logo_other"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtSignUp"
                 android:id="@+id/imgPic"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="3:1"/>
+                app:layout_constraintDimensionRatio="3:1">
+
+                <androidx.cardview.widget.CardView
+                    app:cardCornerRadius="40dp"
+                    app:cardElevation="0dp"
+                    android:layout_width="@dimen/baseline_120dp"
+                    android:layout_height="@dimen/baseline_120dp"
+                    android:backgroundTint="@color/primaryColor"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                    android:layout_width="@dimen/baseline_100dp"
+                    android:layout_height="@dimen/baseline_100dp"
+                    android:text="J"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textSize="@dimen/baseline_80dp"
+                    android:id="@+id/txtSymbol"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inpFname"
@@ -121,6 +144,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
+
+
 
 
             <com.google.android.material.textfield.TextInputLayout

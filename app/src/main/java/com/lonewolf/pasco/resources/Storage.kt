@@ -134,6 +134,14 @@ class Storage(context: Context) {
         editor.commit()
     }
 
+    var  justLoggedIn : Boolean
+        get() = pref.getBoolean(JUSTLOGGEDIN, false)
+        set(KeepLoggedIn) {
+            val editor = editor
+            editor.putBoolean(JUSTLOGGEDIN, KeepLoggedIn)
+            editor.commit()
+        }
+
     var featurePic1 : String?
     get() = pref.getString(FEATUREPIC1, "")
     set(FeaturePic) {
@@ -553,6 +561,7 @@ class Storage(context: Context) {
         private const val FIRST4 = "First Time 4"
         private const val FIRST5 = "First Time 5"
         private const val FIRST6 = "First Time 6"
+        private const val JUSTLOGGEDIN = "Just logged into app"
 
 
 

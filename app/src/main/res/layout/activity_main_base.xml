@@ -47,6 +47,7 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
     <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawLay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:openDrawer="end"
@@ -100,7 +101,155 @@
     <com.google.android.material.navigation.NavigationView
         android:layout_gravity="start"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:padding="@dimen/baseline_10dp"
+                    android:background="@drawable/prof_bg">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="@dimen/baseline_70dp"
+                        android:layout_height="@dimen/baseline_70dp"
+                        android:src="@mipmap/logo_round"
+                        android:id="@+id/imgPic"/>
+                    <TextView
+                        android:padding="@dimen/baseline_5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:padding="@dimen/baseline_10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/txtHome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_10dp"
+                        android:text="@string/home"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/home" />
+
+                    <TextView
+                        android:id="@+id/txtDash"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_15dp"
+                        android:text="My Dashboard"
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/home" />
+
+                    <TextView
+                        android:id="@+id/txtProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_15dp"
+                        android:text="@string/profile"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/pencil" />
+
+
+
+                    <TextView
+                        android:id="@+id/txtTestScores"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_15dp"
+                        android:text="Test Scores"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/icons8_test_24" />
+
+                    <TextView
+                        android:id="@+id/txtQuizLeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_15dp"
+                        android:text="Quiz Leaderboard"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/icons8_quiz_24" />
+
+                    <TextView
+                        android:id="@+id/txtNotification"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_15dp"
+                        android:text="Notification"
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        android:drawableTint="@color/black"
+                        app:drawableStartCompat="@drawable/ic_baseline_email_24" />
+
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_10dp"
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/baseline_2dp"
+                        android:background="@color/grey"
+                        android:layout_marginTop="20dp"/>
+
+                    <TextView
+                        android:id="@+id/txtLogin"
+                        android:gravity="bottom"
+                        android:layout_gravity="bottom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_10dp"
+                        android:text="@string/login"
+                        android:textAllCaps="true"
+                        android:textSize="18sp"
+                        android:drawablePadding="@dimen/baseline_5dp"
+                        app:drawableStartCompat="@drawable/login" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </ScrollView>
 
     </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>

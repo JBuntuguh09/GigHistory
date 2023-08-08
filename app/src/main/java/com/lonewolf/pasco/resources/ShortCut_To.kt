@@ -154,6 +154,11 @@ object ShortCut_To {
             }
         }
 
+    fun getCurrentTime(): String{
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("HH:mm")
+         return formatter.format(time)
+    }
     fun getDateTimeForAPI(dateFormatted: String?): String {
         val apiDate = Calendar.getInstance()
         try {
@@ -584,6 +589,14 @@ object ShortCut_To {
 
             return list
         }
+
+    val charPool : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+    fun randomStringByKotlinRandom(limit: Int) = (1..limit)
+        .map { kotlin.random.Random.nextInt(0, charPool.size).let { charPool[it] } }
+        .joinToString("")
+
+    fun timeStamp() = System.currentTimeMillis().toString()
+
     val countryies: Array<String>
         get() = arrayOf(
             "Select Country",
