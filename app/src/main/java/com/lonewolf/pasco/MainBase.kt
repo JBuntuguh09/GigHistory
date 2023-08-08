@@ -2,13 +2,22 @@ package com.lonewolf.pasco
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.lonewolf.pasco.databinding.ActivityMainBaseBinding
@@ -16,15 +25,26 @@ import com.lonewolf.pasco.fragments.Leaderboard
 import com.lonewolf.pasco.fragments.ListMain
 import com.lonewolf.pasco.fragments.Quiz
 import com.lonewolf.pasco.fragments.StartPage
+import com.lonewolf.pasco.fragments.TestResults
 import com.lonewolf.pasco.resources.Constant
 import com.lonewolf.pasco.resources.ShortCut_To
 import com.lonewolf.pasco.resources.Storage
+import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
 class MainBase : AppCompatActivity() {
+
+    private val mDrawerList: ListView? = null
+    private var mToggle: ActionBarDrawerToggle? = null
+
+    //private TextView submit;
+    private val mAdapter: ArrayAdapter<String>? = null
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    var toolbar: Toolbar? = null
 
     private lateinit var databaseReference: DatabaseReference
     private lateinit var storage: Storage
@@ -37,6 +57,9 @@ class MainBase : AppCompatActivity() {
     var welcome = "Welcome"
     var sectBAns = ArrayList<HashMap<String, String>>()
     var topQuizArray = ArrayList<HashMap<String, String>>()
+    var topQuizMonthArray = ArrayList<HashMap<String, String>>()
+    var topQuizDayArray = ArrayList<HashMap<String, String>>()
+
     var topQuizInc = 0
 
     var bMenu = 0
@@ -68,6 +91,7 @@ class MainBase : AppCompatActivity() {
         navTo(StartPage(), "Home", "Login",0)
         getButtons()
         getTop()
+        getDrawer()
     }
 
     private fun getButtons() {
@@ -172,7 +196,7 @@ class MainBase : AppCompatActivity() {
         setButtons(mainBaseBinding.txtHome, StartPage())
         setButtons(mainBaseBinding.txtQuizLeader, Leaderboard())
         setButtons(mainBaseBinding.txtDash, StartPage())
-        setButtons(mainBaseBinding.txtTestScores, StartPage())
+        setButtons(mainBaseBinding.txtTestScores, TestResults())
         setButtons(mainBaseBinding.txtNotification, StartPage())
 
     }
@@ -194,6 +218,27 @@ class MainBase : AppCompatActivity() {
 
         fragmentTransaction.commit()
         mainBaseBinding.txtTopic.text = page
+
+
+
+    }
+
+    private fun getDrawer() {
+        toolbar = findViewById(R.id.tabSettings)
+        navigationView = findViewById(R.id.navView)
+        drawerLayout = findViewById(R.id.drawLay)
+        navigationView.setNavigationItemSelectedListener { item: MenuItem? -> false }
+        mToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(mToggle!!)
+        mToggle!!.syncState()
+        //mToggle!!.setHomeAsUpIndicator(R.drawable.pencil_outline)
+        mToggle!!.drawerArrowDrawable.color = resources.getColor(R.color.white, null);
+        //
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.title = ""
+//        supportActionBar?.setDisplayShowCustomEnabled(true)
+        //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
 
 
 
@@ -221,15 +266,7 @@ class MainBase : AppCompatActivity() {
             }
         })
 
-        databaseReference.child("Version").child("NewContentVersion").addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onDataChange(p0: DataSnapshot) {
 
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
     }
 
     fun setButtons(txt : TextView, frag : Fragment){
@@ -281,6 +318,57 @@ class MainBase : AppCompatActivity() {
                     }
                 }
                 ShortCut_To.sortNumericallyReverse(topQuizArray, "score")
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+        })
+
+        databaseReference.child("Global").child("Quiz").child("Month").limitToFirst(20).addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                topQuizMonthArray.clear()
+                for(grand in p0.children){
+                    for(father in grand.children){
+                        val hashMap = HashMap<String, String>()
+                        hashMap["name"] = father.child("name").value.toString()
+                        hashMap["score"] = father.child("score").value.toString()
+                        hashMap["userId"] = father.child("userId").value.toString()
+                        hashMap["name"] = father.child("name").value.toString()
+                        //hashMap["name"] = father.child("name").value.toString()
+
+                        topQuizMonthArray.add(hashMap)
+                    }
+                }
+                ShortCut_To.sortNumericallyReverse(topQuizMonthArray, "score")
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+        })
+
+        databaseReference.child("Global").child("Quiz").child("Day").limitToFirst(20).addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(p0: DataSnapshot) {
+                topQuizDayArray.clear()
+                for(grand in p0.children){
+                    for(father in grand.children){
+                        val hashMap = HashMap<String, String>()
+                        hashMap["name"] = father.child("name").value.toString()
+                        hashMap["score"] = father.child("score").value.toString()
+                        hashMap["userId"] = father.child("userId").value.toString()
+                        hashMap["name"] = father.child("name").value.toString()
+                        //hashMap["name"] = father.child("name").value.toString()
+
+                        topQuizDayArray.add(hashMap)
+                    }
+                }
+                ShortCut_To.sortNumericallyReverse(topQuizDayArray, "score")
+
             }
 
             override fun onCancelled(p0: DatabaseError) {

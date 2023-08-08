@@ -69,6 +69,7 @@ class Quiz : Fragment() {
     var currNum = 0
     private  val arrayList = ArrayList<HashMap<String, String>>()
     private  val arrayListDic = ArrayList<HashMap<String, String>>()
+    private  val arrayListAnsSel = ArrayList<HashMap<String, String>>()
     private lateinit var quizViewModel: QuizViewModel
     private lateinit var alertDialog: AlertDialog.Builder
     private lateinit var aDialog: AlertDialog
@@ -241,6 +242,11 @@ class Quiz : Fragment() {
             }
 
             alert.show()
+
+            val mash = arrayList[currNum]
+            mash["ansCecked"] = selected
+            arrayListAnsSel.add(mash)
+
             sendtoDb()
             wOk.setOnClickListener {
                 try{
@@ -262,12 +268,12 @@ class Quiz : Fragment() {
     }
 
     private fun sendtoDb() {
-        println("runningggggggg")
+
         val path = (activity as MainBase)
         if(path.auth.currentUser!=null){
             val code = ShortCut_To.timeStamp()+ShortCut_To.randomStringByKotlinRandom(5)
             val score = (currNum + extraMk).toString()
-            val hash = HashMap<String, String>()
+            val hash = HashMap<String, Any>()
             hash["score"] = score
             hash["timestamp"] = ShortCut_To.timeStamp()
             hash["userId"] = storage.uSERID!!
@@ -277,12 +283,13 @@ class Quiz : Fragment() {
             hash["time"] = ShortCut_To.getCurrentTime()
             hash["month"] = ShortCut_To.currentMonthYear
             hash["name"] = storage.uSERNAME!!
+            hash["answers"] = arrayListAnsSel
             databaseReference.child("Scores").child("Quiz").child(storage.uSERID!!).child(code).setValue(hash)
 
             if(path.topQuizArray.size<20){
                 for (a in path.topQuizArray.indices){
                     val vash = path.topQuizArray[a]
-                    if(vash["score"]!!.toInt() > hash["score"]!!.toInt()){
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
                         databaseReference.child("Global").child("Quiz").child("All Time").child(score).child(code).setValue(hash)
 
                     }
@@ -293,9 +300,52 @@ class Quiz : Fragment() {
 
             }else{
                 val jash  = path.topQuizArray[path.topQuizArray.size-1]
-                if(hash["score"]!!.toInt()> jash["score"]!!.toInt()){
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
                     databaseReference.child("Global").child("Quiz").child("All Time").child(jash["score"]!!).child(jash["code"]!!).removeValue()
                     databaseReference.child("Global").child("Quiz").child("All Time").child(score).child(code).setValue(hash)
+                }
+            }
+
+            var cDay = ShortCut_To.currentDateFormat2.replace("/", "I")
+            if(path.topQuizDayArray.size<20){
+                for (a in path.topQuizDayArray.indices){
+                    val vash = path.topQuizDayArray[a]
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
+                        databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+
+                    }
+                }
+                if(path.topQuizDayArray.size==0){
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+                }
+
+            }else{
+                val jash  = path.topQuizDayArray[path.topQuizDayArray.size-1]
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(jash["score"]!!).child(jash["code"]!!).removeValue()
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+                }
+            }
+
+            //handle month
+            var cMonth = ShortCut_To.currentMonthYear.replace("/", "I")
+            if(path.topQuizMonthArray.size<20){
+                for (a in path.topQuizMonthArray.indices){
+                    val vash = path.topQuizMonthArray[a]
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
+                        databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
+
+                    }
+                }
+                if(path.topQuizMonthArray.size==0){
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
+                }
+
+            }else{
+                val jash  = path.topQuizMonthArray[path.topQuizMonthArray.size-1]
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(jash["score"]!!).child(jash["code"]!!).removeValue()
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
                 }
             }
 
@@ -396,6 +446,7 @@ class Quiz : Fragment() {
     private fun nextQues() {
         binding.btnSubmit.setOnClickListener {
             println("$rAns /// $selected")
+
             //Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
             if(currNum+1<arrayList.size){
                 if(rAns == selected){
@@ -427,6 +478,8 @@ class Quiz : Fragment() {
         getTimer()
         val hash = arrayList[currNum]
         ShortCut_To.hideKeyboard(requireActivity())
+
+
 
         if(hash["Type"].equals("Dictionary")){
             binding.edtAnswer.setText("")
