@@ -17,6 +17,7 @@ import com.lonewolf.pasco.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 object ShortCut_To {
     const val DATEWITHTIME = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -315,6 +316,36 @@ object ShortCut_To {
         } else {
             ""
         }
+    }
+
+    fun numberToPosition(num : Int) : String{
+        return  when{
+            num % 100 in 11..13 -> "${num}th"  //For ending with 11, 12, 13
+            num % 10 == 1 -> "${num}st"
+            num % 10 == 2 -> "${num}nd"
+            num % 10 == 3 -> "${num}rd"
+            else -> "${num}th"
+        }
+    }
+
+    fun sortNumerically(arrayList: ArrayList<HashMap<String, String>>, key:String){
+        val comparator = Comparator<HashMap<String, String>> { map1, map2 ->
+            val value1 = map1[key]?.toIntOrNull() ?: 0
+            val value2 = map2[key]?.toIntOrNull() ?: 0
+            value1 - value2 // Compare numerically based on the "number" key's value
+        }
+
+        Collections.sort(arrayList, comparator)
+    }
+
+    fun sortNumericallyReverse(arrayList: ArrayList<HashMap<String, String>>, key: String) {
+        val comparator = Comparator<HashMap<String, String>> { map1, map2 ->
+            val value1 = map1[key]?.toIntOrNull() ?: 0
+            val value2 = map2[key]?.toIntOrNull() ?: 0
+            value2 - value1 // Compare numerically in descending order based on the specified key's value
+        }
+
+        Collections.sort(arrayList, comparator)
     }
 
     fun getDayOFWeek(dDate: String): String {

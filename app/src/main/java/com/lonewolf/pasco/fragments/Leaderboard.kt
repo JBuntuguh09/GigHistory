@@ -5,10 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.lonewolf.pasco.MainBase
 import com.lonewolf.pasco.R
+import com.lonewolf.pasco.adaptors.RecyclerViewDashboard
 import com.lonewolf.pasco.databinding.FragmentLeaderboardBinding
 import com.lonewolf.pasco.resources.Storage
 
@@ -58,7 +61,18 @@ class Leaderboard : Fragment() {
         val arrayList = path.topQuizArray
         binding.txtFirst.text = "${arrayList[0]["name"]}\n${arrayList[0]["score"]}"
         binding.txtSecond.text = "${arrayList[1]["name"]}\n${arrayList[1]["score"]}"
-        binding.txtThird.text = "${arrayList[1]["name"]}\n${arrayList[2]["score"]}"
+        binding.txtThird.text = "${arrayList[2]["name"]}\n${arrayList[2]["score"]}"
+
+        val nArrayList = ArrayList<HashMap<String, String>>()
+        for (a in 3 until arrayList.size){
+            nArrayList.add(arrayList[a])
+        }
+
+        val recyclerViewDashboard = RecyclerViewDashboard(requireContext(), nArrayList)
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+        binding.recyclerView.adapter = recyclerViewDashboard
 
     }
 

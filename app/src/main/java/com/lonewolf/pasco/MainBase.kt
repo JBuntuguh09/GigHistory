@@ -275,12 +275,12 @@ class MainBase : AppCompatActivity() {
                         hashMap["score"] = father.child("score").value.toString()
                         hashMap["userId"] = father.child("userId").value.toString()
                         hashMap["name"] = father.child("name").value.toString()
-                        hashMap["name"] = father.child("name").value.toString()
+                        //hashMap["name"] = father.child("name").value.toString()
 
                         topQuizArray.add(hashMap)
                     }
                 }
-                ShortCut_To.sortDataInvert(topQuizArray, "score")
+                ShortCut_To.sortNumericallyReverse(topQuizArray, "score")
             }
 
             override fun onCancelled(p0: DatabaseError) {
