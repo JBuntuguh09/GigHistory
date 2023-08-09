@@ -14,6 +14,8 @@ import com.google.firebase.database.*
 import com.lonewolf.pasco.MainBase
 import com.lonewolf.pasco.R
 import com.lonewolf.pasco.database.Answers
+import com.lonewolf.pasco.database.Highscore
+import com.lonewolf.pasco.database.HighscoreViewModel
 import com.lonewolf.pasco.database.QuesViewModel
 import com.lonewolf.pasco.database.Question
 import com.lonewolf.pasco.database.answersViewModel
@@ -53,6 +55,7 @@ class Objectives : Fragment() {
 
     private lateinit var quesViewModel: QuesViewModel
     private lateinit var ansViewModel: answersViewModel
+    private lateinit var highscoreViewModel: HighscoreViewModel
     var shouldInterceptBackPress = true
     private var arrayListOff = ArrayList<HashMap<String, String>>()
 
@@ -79,6 +82,7 @@ class Objectives : Fragment() {
         storage.isComplete = 0
         quesViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(QuesViewModel::class.java)
         ansViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(answersViewModel::class.java)
+        highscoreViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(HighscoreViewModel::class.java)
 
         quesViewModel.liveData.observe(viewLifecycleOwner) { data ->
             if (data.isNotEmpty()) {
@@ -457,6 +461,9 @@ class Objectives : Fragment() {
 
     private fun insertAns(){
         println("jammmm : ${listAns}")
+        var r = 0
+        var w = 0
+        var t = ""
         binding.progressBar.visibility = View.GONE
         val rId = (1000..10000).shuffled().last()
         val aId = "${ShortCut_To.currentDatewithTime.split(".")[0].replace(" T ", " ")}$rId"
@@ -466,7 +473,18 @@ class Objectives : Fragment() {
                 hash.get("AnswerB")!!,hash.get("AnswerC")!!,hash.get("AnswerD")!!,(a+1).toString(),
                 storage.project!!, storage.selectedCategory!!, aId, ShortCut_To.currentDatewithTime)
             ansViewModel.insert(ans)
+            if (hash.get("Ans")!! == hash.get("SelectAns")!!){
+                r+=1
+            }else{
+                w+=1
+            }
         }
+
+
+        val score = "$r/${r+w}"
+        var h1 = Highscore(0, aId, ShortCut_To.currentDateFormat2, score, storage.project!!,
+            "Objectives", storage.uSERID!!)
+        highscoreViewModel.insert(h1)
         cDown?.cancel()
         binding.progressBar.visibility = View.GONE
         storage.ansTitle = aId

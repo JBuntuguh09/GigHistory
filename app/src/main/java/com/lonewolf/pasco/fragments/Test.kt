@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
@@ -14,7 +15,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.lonewolf.pasco.R
 import com.lonewolf.pasco.adaptors.RecyclerViewDashboard
+import com.lonewolf.pasco.adaptors.RecyclerViewObj
 import com.lonewolf.pasco.adaptors.RecyclerViewTest
+import com.lonewolf.pasco.database.Highscore
+import com.lonewolf.pasco.database.HighscoreViewModel
 import com.lonewolf.pasco.databinding.FragmentTestBinding
 import com.lonewolf.pasco.resources.Storage
 import kotlin.properties.Delegates
@@ -38,6 +42,7 @@ class Test(s: String) : Fragment() {
     private lateinit var databaseReference: DatabaseReference
     private  var arrayList = ArrayList<HashMap<String, String>>()
     private var type = s
+    private lateinit var highscoreViewModel: HighscoreViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +62,43 @@ class Test(s: String) : Fragment() {
         storage = Storage(requireContext())
         databaseReference = FirebaseDatabase.getInstance().reference
 
+        highscoreViewModel = ViewModelProvider(this, defaultViewModelProviderFactory).get(HighscoreViewModel::class.java)
+
+        highscoreViewModel.liveData.observe(viewLifecycleOwner) { data ->
+            if (data.isNotEmpty() && type =="Objectives") {
+                println(data)
+                getObjData(data)
+                binding.progressBar.visibility = View.GONE
+            } else {
+            }
+        }
         getButtons()
         getData()
         return view
+    }
+
+    private fun getObjData(data: List<Highscore>?) {
+        if (data != null) {
+            arrayList.clear()
+            for(element in data) {
+                val hasd = element
+                val hashMap = HashMap<String, String>()
+                val hashMapAns = HashMap<String, String>()
+                hashMap["answerId"] = hasd.answerId
+                hashMap["score"] = hasd.score
+                hashMap["name"] = hasd.subject
+                hashMap["date"] = hasd.date
+                arrayList.add(hashMap)
+
+            }
+            if(arrayList.size>0){
+                val recyclerViewObj = RecyclerViewObj(requireContext(), arrayList)
+                val linearLayoutManager = LinearLayoutManager(requireContext())
+                binding.recyclerView.layoutManager = linearLayoutManager
+                binding.recyclerView.itemAnimator = DefaultItemAnimator()
+                binding.recyclerView.adapter = recyclerViewObj
+            }
+        }
     }
 
     private fun getButtons() {
@@ -69,35 +108,10 @@ class Test(s: String) : Fragment() {
 
     fun getData(){
         if(type=="Objectives"){
-            databaseReference.child("Scores").child("Objectives").child(storage.uSERID!!).addValueEventListener(object :ValueEventListener{
-                override fun onDataChange(p0: DataSnapshot) {
-                    arrayList.clear()
-                    binding.progressBar.visibility = View.GONE
-                    for(father in p0.children){
-                        val hashMap = HashMap<String, String>()
-                        //hashMap["name"] = father.child("name").value.toString()
-                        hashMap["score"] = father.child("score").value.toString()
-                        hashMap["userId"] = father.child("userId").value.toString()
-                        hashMap["date"] = father.child("date").value.toString()
-                        hashMap["time"] = father.child("time").value.toString()
-                        hashMap["name"] = father.child("name").value.toString()
+            binding.txtNum.text = "Date"
+            binding.txtDate.text = "Topic"
+            binding.txtTime.visibility = View.GONE
 
-                        arrayList.add(hashMap)
-                    }
-                    if(arrayList.size>0){
-                        val recyclerViewDashboard = RecyclerViewTest(requireContext(), arrayList)
-                        val linearLayoutManager = LinearLayoutManager(requireContext())
-                        binding.recyclerView.layoutManager = linearLayoutManager
-                        binding.recyclerView.itemAnimator = DefaultItemAnimator()
-                        binding.recyclerView.adapter = recyclerViewDashboard
-                    }
-                }
-
-                override fun onCancelled(p0: DatabaseError) {
-
-                }
-
-            })
         }else{
             databaseReference.child("Scores").child("Quiz").child(storage.uSERID!!).addValueEventListener(object :ValueEventListener{
                 override fun onDataChange(p0: DataSnapshot) {

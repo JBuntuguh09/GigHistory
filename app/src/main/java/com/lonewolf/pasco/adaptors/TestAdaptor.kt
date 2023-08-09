@@ -9,9 +9,8 @@ class TestAdaptor(fm : FragmentActivity): FragmentStateAdapter(fm) {
 
     fun getItemName(position: Int):String{
         return when (position){
-            0->"All"
-            1->"Bill"
-            2->"Payments"
+            0->"Objectives"
+            1->"Quiz"
             else->""
         }
     }
