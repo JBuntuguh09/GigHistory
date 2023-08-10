@@ -5,7 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Question::class, Answers::class, Topics::class, Dictionary::class, Notes::class, Quiz::class], version = 8)
+@Database(entities = [Question::class, Answers::class, Topics::class, Dictionary::class, Notes::class,
+    Quiz::class, Highscore::class], version = 9)
 
 abstract class QuestionDb : RoomDatabase() {
 
@@ -15,6 +16,7 @@ abstract class QuestionDb : RoomDatabase() {
     abstract fun dictionaryDao() : DictionaryDao
     abstract fun notesDao() : NotesDao
     abstract fun quizDao() : QuizDao
+    abstract fun highscoreDao() : HighscoreDao
 
 
     companion object {

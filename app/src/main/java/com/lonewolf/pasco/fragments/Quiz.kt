@@ -42,6 +42,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -68,6 +69,7 @@ class Quiz : Fragment() {
     var currNum = 0
     private  val arrayList = ArrayList<HashMap<String, String>>()
     private  val arrayListDic = ArrayList<HashMap<String, String>>()
+    private  val arrayListAnsSel = ArrayList<HashMap<String, String>>()
     private lateinit var quizViewModel: QuizViewModel
     private lateinit var alertDialog: AlertDialog.Builder
     private lateinit var aDialog: AlertDialog
@@ -78,7 +80,8 @@ class Quiz : Fragment() {
     var RQues = ""
     var rExtra = 0
     var currentTask = HashMap<String, String>()
-
+    var numIns = 0
+    var extraMk = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -115,11 +118,8 @@ class Quiz : Fragment() {
         }else{
             println(storage.randVal)
             quizViewModel.liveDataSingle.observe(viewLifecycleOwner){ data ->
-                println(data+" :::: mmm")
                // quizViewModel.deleteAll()
                 if(data.isNotEmpty()){
-
-                    println("size = ${data.size}")
                     arrayList.clear()
                     getOffline(data)
                 }else{
@@ -166,7 +166,10 @@ class Quiz : Fragment() {
             arrayList.add(hashMapAns)
         }
         arrayList.shuffle()
-        nextQues()
+        if(numIns==0) {
+            numIns = 1
+            nextQues()
+        }
     }
 
     private fun getButtons() {
@@ -184,6 +187,7 @@ class Quiz : Fragment() {
     }
 
     private fun timeUp(type : Int) {
+
         try {
             if(cDown!=null){
                 cDown!!.cancel()
@@ -232,12 +236,18 @@ class Quiz : Fragment() {
                 }catch (e : Exception){
                     e.printStackTrace()
                 }
-                val score = currNum*3
+                val score = currNum+extraMk
                 (activity as MainBase).score = score.toString()
                 (activity as MainBase).navTo(CongratsQuiz(), "Quiz", "Congratulations", 0)
             }
 
             alert.show()
+
+            val mash = arrayList[currNum]
+            mash["ansCecked"] = selected
+            arrayListAnsSel.add(mash)
+
+            sendtoDb()
             wOk.setOnClickListener {
                 try{
                     aDialog.dismiss()
@@ -245,7 +255,7 @@ class Quiz : Fragment() {
                     e.printStackTrace()
                 }
                 alert.dismiss()
-                val score = currNum*3
+                val score = currNum+extraMk
                 (activity as MainBase).score = score.toString()
                 (activity as MainBase).navTo(CongratsQuiz(), "Quiz", "Congratulations", 0)
 
@@ -257,9 +267,94 @@ class Quiz : Fragment() {
 
     }
 
+    private fun sendtoDb() {
+
+        val path = (activity as MainBase)
+        if(path.auth.currentUser!=null){
+            val code = ShortCut_To.timeStamp()+ShortCut_To.randomStringByKotlinRandom(5)
+            val score = (currNum + extraMk).toString()
+            val hash = HashMap<String, Any>()
+            hash["score"] = score
+            hash["timestamp"] = ShortCut_To.timeStamp()
+            hash["userId"] = storage.uSERID!!
+            hash["code"] = code
+            hash["datetime"] = Calendar.getInstance().time.toString()
+            hash["date"] = ShortCut_To.currentDateFormat2
+            hash["time"] = ShortCut_To.getCurrentTime()
+            hash["month"] = ShortCut_To.currentMonthYear
+            hash["name"] = storage.uSERNAME!!
+            hash["answers"] = arrayListAnsSel
+            databaseReference.child("Scores").child("Quiz").child(storage.uSERID!!).child(code).setValue(hash)
+
+            if(path.topQuizArray.size<20){
+                for (a in path.topQuizArray.indices){
+                    val vash = path.topQuizArray[a]
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
+                        databaseReference.child("Global").child("Quiz").child("All Time").child(score).child(code).setValue(hash)
+
+                    }
+                }
+                if(path.topQuizArray.size==0){
+                    databaseReference.child("Global").child("Quiz").child("All Time").child(score).child(code).setValue(hash)
+                }
+
+            }else{
+                val jash  = path.topQuizArray[path.topQuizArray.size-1]
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
+                    databaseReference.child("Global").child("Quiz").child("All Time").child(jash["score"]!!).child(jash["code"]!!).removeValue()
+                    databaseReference.child("Global").child("Quiz").child("All Time").child(score).child(code).setValue(hash)
+                }
+            }
+
+            var cDay = ShortCut_To.currentDateFormat2.replace("/", "I")
+            if(path.topQuizDayArray.size<20){
+                for (a in path.topQuizDayArray.indices){
+                    val vash = path.topQuizDayArray[a]
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
+                        databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+
+                    }
+                }
+                if(path.topQuizDayArray.size==0){
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+                }
+
+            }else{
+                val jash  = path.topQuizDayArray[path.topQuizDayArray.size-1]
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(jash["score"]!!).child(jash["code"]!!).removeValue()
+                    databaseReference.child("Global").child("Quiz").child("Day").child(cDay).child(score).child(code).setValue(hash)
+                }
+            }
+
+            //handle month
+            var cMonth = ShortCut_To.currentMonthYear.replace("/", "I")
+            if(path.topQuizMonthArray.size<20){
+                for (a in path.topQuizMonthArray.indices){
+                    val vash = path.topQuizMonthArray[a]
+                    if(vash["score"]!!.toInt() > hash["score"]!!.toString().toInt()){
+                        databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
+
+                    }
+                }
+                if(path.topQuizMonthArray.size==0){
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
+                }
+
+            }else{
+                val jash  = path.topQuizMonthArray[path.topQuizMonthArray.size-1]
+                if(hash["score"]!!.toString().toInt()> jash["score"]!!.toInt()){
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(jash["score"]!!).child(jash["code"]!!).removeValue()
+                    databaseReference.child("Global").child("Quiz").child("Month").child(cMonth).child(score).child(code).setValue(hash)
+                }
+            }
+
+
+        }
+    }
+
     @OptIn(DelicateCoroutinesApi::class)
     private fun getOnlineData() {
-
         GlobalScope.launch(Dispatchers.IO) {
             databaseReference.child("Questions").child("History").addListenerForSingleValueEvent(
                 object : ValueEventListener {
@@ -288,9 +383,6 @@ class Quiz : Fragment() {
                                 }
 
                                 arrayList.shuffle()
-
-
-
                             }
                             println("aloha = ${arrayList}")
                             getDicOnline()
@@ -337,7 +429,7 @@ class Quiz : Fragment() {
                             if(arrayList.size>0){
                                 arrayList.shuffle()
                                 insertData()
-                                nextQues()
+                               // nextQues()
                             }
                         }
 
@@ -354,12 +446,14 @@ class Quiz : Fragment() {
     private fun nextQues() {
         binding.btnSubmit.setOnClickListener {
             println("$rAns /// $selected")
+
             //Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show()
             if(currNum+1<arrayList.size){
-                if(rAns.equals(selected)){
+                if(rAns == selected){
+                    extraMk += if ((tPauseVal/1000)<10) 2 else if((tPauseVal/1000)<20) 1 else 0
                     showKonfet()
                     currNum++
-                    val score = "Score : ${currNum * 3}pts"
+                    val score = "Score : ${currNum + extraMk}pts"
                     binding.txtPage.text = score
                     nextQues()
                 }else{
@@ -384,6 +478,8 @@ class Quiz : Fragment() {
         getTimer()
         val hash = arrayList[currNum]
         ShortCut_To.hideKeyboard(requireActivity())
+
+
 
         if(hash["Type"].equals("Dictionary")){
             binding.edtAnswer.setText("")
@@ -835,7 +931,7 @@ class Quiz : Fragment() {
             val qInfo = com.lonewolf.pasco.database.Quiz(0, hash["Question"]!!,
             hash["SelectAns"]!!, hash["AnswerA"]!!, hash["AnswerB"]!!, hash["AnswerC"]!!,
                 hash["AnswerD"]!!, hash["Question_Number"]!!, storage.selectedCategory!!, hash["Type"]!!)
-        println("insert stuff")
+
         quizViewModel.insert(qInfo)
         }
     }
@@ -853,8 +949,8 @@ class Quiz : Fragment() {
                 val hour = millisUntilFinished / 3600000 % 24
                 val min = millisUntilFinished / 60000 % 60
                 val sec = millisUntilFinished / 1000 % 60
-                tPauseVal=tPauseVal+1000
-               // println(tPauseVal)
+                tPauseVal += 1000
+
                 binding.txtTime.setText(
                     f.format(hour).toString() + ":" + f.format(min) + ":" + f.format(
                         sec
@@ -924,6 +1020,8 @@ class Quiz : Fragment() {
 
 
     }
+
+
 
     companion object {
         /**

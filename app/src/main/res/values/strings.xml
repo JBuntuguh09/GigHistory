@@ -78,4 +78,9 @@
     <string name="selectSchool">Select your School</string>
     <string name="name">Name</string>
     <string name="enter_phone">Enter your phone number</string>
+    <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="today">Today</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
